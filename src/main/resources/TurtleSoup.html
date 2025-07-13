@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海龟汤推理游戏</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --gray: #95a5a6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--light);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(44, 62, 80, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: rgba(26, 42, 108, 0.9);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--light);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--light);
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .game-area {
+            display: flex;
+            min-height: 500px;
+        }
+
+        @media (max-width: 768px) {
+            .game-area {
+                flex-direction: column;
+            }
+        }
+
+        .mystery-section {
+            flex: 1;
+            padding: 25px;
+            background: rgba(52, 73, 94, 0.7);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mystery-container {
+            background: rgba(26, 42, 108, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mystery-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mystery-title h2 {
+            font-size: 1.8rem;
+            color: var(--light);
+        }
+
+        .mystery-content {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            flex: 1;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .action-section {
+            width: 300px;
+            background: rgba(44, 62, 80, 0.8);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .action-section {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid rgba(255,255,255,0.1);
+            }
+        }
+
+        .action-panel {
+            background: rgba(26, 42, 108, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            color: var(--light);
+        }
+
+        .input-group input, .input-group textarea {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            font-size: 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .input-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .game-log {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .log-entry {
+            padding: 10px 15px;
+            border-radius: 6px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .log-question {
+            background: rgba(52, 152, 219, 0.2);
+            border-left: 4px solid var(--primary);
+        }
+
+        .log-answer {
+            background: rgba(46, 204, 113, 0.2);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .log-hint {
+            background: rgba(243, 156, 18, 0.2);
+            border-left: 4px solid var(--warning);
+        }
+
+        .log-guess {
+            background: rgba(231, 76, 60, 0.2);
+            border-left: 4px solid var(--danger);
+        }
+
+        .log-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .log-content {
+            padding-left: 24px;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--dark);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>海龟汤推理游戏</h1>
+        <p>挑战你的逻辑推理能力，通过提问和猜测解开一个个离奇谜题</p>
+    </div>
+
+    <div class="status-bar">
+        <div class="status-item">
+            <span class="icon">🕵️</span>
+            <span id="session-status">未开始游戏</span>
+        </div>
+        <div class="status-item">
+            <span class="icon">❓</span>
+            <span id="question-count">提问: 0</span>
+        </div>
+        <div class="status-item">
+            <span class="icon">💡</span>
+            <span id="hint-count">提示: 0/3</span>
+        </div>
+    </div>
+
+    <div class="game-area">
+        <div class="mystery-section">
+            <div class="mystery-container">
+                <div class="mystery-title">
+                    <span class="icon">🔍</span>
+                    <h2>谜题</h2>
+                </div>
+                <div class="mystery-content" id="mystery-text">
+                    点击"开始新游戏"按钮生成一个神秘的海龟汤谜题。你可以通过提问（是/否问题）来获取线索，使用提示来获得帮助，最后尝试猜测真相！
+                </div>
+
+                <div class="mystery-title">
+                    <span class="icon">📜</span>
+                    <h2>游戏日志</h2>
+                </div>
+                <div class="game-log" id="game-log">
+                    <div class="log-entry log-info">
+                        <div class="log-header">
+                            <span class="icon">ℹ️</span>
+                            <span>系统</span>
+                        </div>
+                        <div class="log-content">欢迎来到海龟汤推理游戏！</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-section">
+            <div class="action-panel">
+                <div class="input-group">
+                    <label for="question-input">提问（是/否问题）</label>
+                    <input type="text" id="question-input" placeholder="输入你的问题...">
+                    <button class="btn btn-primary" id="ask-btn">
+                        <span class="icon">❓</span>
+                        提问
+                    </button>
+                </div>
+
+                <button class="btn btn-warning" id="hint-btn">
+                    <span class="icon">💡</span>
+                    获取提示
+                </button>
+
+                <div class="input-group">
+                    <label for="guess-input">猜测真相</label>
+                    <textarea id="guess-input" placeholder="输入你的完整猜测..."></textarea>
+                    <button class="btn btn-secondary" id="guess-btn">
+                        <span class="icon">🔮</span>
+                        提交猜测
+                    </button>
+                </div>
+
+                <button class="btn btn-danger" id="new-game-btn">
+                    <span class="icon">🔄</span>
+                    开始新游戏
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    // 游戏状态
+    const gameState = {
+        sessionId: null,
+        mystery: null,
+        truth: null,
+        availableHints: [],
+        usedHints: [],
+        questionHistory: [],
+        solved: false
+    };
+
+    // DOM 元素
+    const elements = {
+        mysteryText: document.getElementById('mystery-text'),
+        gameLog: document.getElementById('game-log'),
+        questionInput: document.getElementById('question-input'),
+        guessInput: document.getElementById('guess-input'),
+        askBtn: document.getElementById('ask-btn'),
+        hintBtn: document.getElementById('hint-btn'),
+        guessBtn: document.getElementById('guess-btn'),
+        newGameBtn: document.getElementById('new-game-btn'),
+        sessionStatus: document.getElementById('session-status'),
+        questionCount: document.getElementById('question-count'),
+        hintCount: document.getElementById('hint-count'),
+        toast: document.getElementById('toast')
+    };
+
+    // API 基础URL
+    const API_BASE_URL = 'http://localhost:8080/api/game';
+
+    // 显示Toast消息
+    function showToast(message, type = 'info') {
+        elements.toast.textContent = message;
+        elements.toast.className = 'toast show';
+
+        // 3秒后隐藏
+        setTimeout(() => {
+            elements.toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // 添加日志条目
+    function addLogEntry(type, content, result = null) {
+        const logEntry = document.createElement('div');
+        let headerText, icon, logClass;
+
+        switch (type) {
+            case 'question':
+                headerText = '你的提问';
+                icon = '❓';
+                logClass = 'log-question';
+                break;
+            case 'answer':
+                headerText = '主持人回答';
+                icon = '💬';
+                logClass = 'log-answer';
+                break;
+            case 'hint':
+                headerText = '提示';
+                icon = '💡';
+                logClass = 'log-hint';
+                break;
+            case 'guess':
+                headerText = '你的猜测';
+                icon = '🔮';
+                logClass = 'log-guess';
+                break;
+            case 'info':
+                headerText = '系统';
+                icon = 'ℹ️';
+                logClass = '';
+                break;
+        }
+
+        logEntry.className = `log-entry ${logClass}`;
+        logEntry.innerHTML = `
+            <div class="log-header">
+                <span class="icon">${icon}</span>
+                <span>${headerText}</span>
+            </div>
+            <div class="log-content">${content}</div>
+            ${result ? `<div class="log-result">${result}</div>` : ''}
+        `;
+
+        elements.gameLog.appendChild(logEntry);
+        // 滚动到底部
+        elements.gameLog.scrollTop = elements.gameLog.scrollHeight;
+    }
+
+    // 更新游戏状态显示
+    function updateStatusDisplay() {
+        elements.sessionStatus.textContent = gameState.sessionId
+            ? `游戏进行中 ${gameState.solved ? '(已解决)' : ''}`
+            : '未开始游戏';
+
+        elements.questionCount.textContent = `提问: ${gameState.questionHistory.length}`;
+        elements.hintCount.textContent = `提示: ${gameState.usedHints.length}/${gameState.usedHints.length + gameState.availableHints.length}`;
+    }
+
+    // 开始新游戏
+    async function startNewGame() {
+        showLoading(true);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/start`, {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                throw new Error('无法开始新游戏');
+            }
+
+            const data = await response.json();
+
+            console.log(data.sessionId);
+            console.log(data.mystery);
+            console.log(data.truth);
+
+            // 更新游戏状态
+            gameState.sessionId = data.sessionId;
+            gameState.mystery = data.mystery;
+            gameState.truth = data.truth;
+            gameState.availableHints = data.availableHints || [];
+            gameState.usedHints = data.usedHints || [];
+            gameState.questionHistory = data.questionHistory || [];
+            gameState.solved = data.solved || false;
+
+            // 更新UI
+            elements.mysteryText.textContent = gameState.mystery;
+            elements.gameLog.innerHTML = '';
+            addLogEntry('info', '新游戏已开始！谜题已生成。');
+
+            // 添加初始日志
+            addLogEntry('info', `谜题: ${gameState.mystery}`);
+
+            showToast('新游戏已开始！');
+        } catch (error) {
+            console.error('开始新游戏失败:', error);
+            showToast(`错误: ${error.message}`, 'error');
+        } finally {
+            showLoading(false);
+            updateStatusDisplay();
+        }
+    }
+
+    // 提问
+    async function askQuestion() {
+        const question = elements.questionInput.value.trim();
+        if (!question || !gameState.sessionId) return;
+
+        showLoading(true);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/ask?sessionId=${gameState.sessionId}&question=${encodeURIComponent(question)}`, {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                throw new Error('提问失败');
+            }
+
+            const answer = await response.text();
+
+            // 更新游戏状态
+            gameState.questionHistory.push(question);
+
+            // 更新UI
+            addLogEntry('question', question);
+            addLogEntry('answer', answer);
+
+            elements.questionInput.value = '';
+            showToast('主持人已回答你的问题');
+        } catch (error) {
+            console.error('提问失败:', error);
+            showToast(`错误: ${error.message}`, 'error');
+        } finally {
+            showLoading(false);
+            updateStatusDisplay();
+        }
+    }
+
+    // 获取提示
+    async function getHint() {
+        if (!gameState.sessionId) return;
+
+        showLoading(true);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/hint?sessionId=${gameState.sessionId}`, {
+                method: 'GET'
+            });
+
+            if (!response.ok) {
+                throw new Error('获取提示失败');
+            }
+
+            const hint = await response.text();
+
+            // 更新游戏状态
+            if (hint !== "没有更多提示了") {
+                gameState.usedHints.push(hint);
+                gameState.availableHints = gameState.availableHints.filter(h => h !== hint);
+            }
+
+            // 更新UI
+            addLogEntry('hint', hint);
+            showToast(hint === "没有更多提示了" ? '没有更多提示了' : '已获得新提示');
+        } catch (error) {
+            console.error('获取提示失败:', error);
+            showToast(`错误: ${error.message}`, 'error');
+        } finally {
+            showLoading(false);
+            updateStatusDisplay();
+        }
+    }
+
+    // 猜测真相
+    async function makeGuess() {
+        const guess = elements.guessInput.value.trim();
+        if (!guess || !gameState.sessionId) return;
+
+        showLoading(true);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/guess?sessionId=${gameState.sessionId}&guess=${encodeURIComponent(guess)}`, {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                throw new Error('猜测失败');
+            }
+
+            const result = await response.json();
+
+            // 更新UI
+            addLogEntry('guess', guess, result.feedback);
+
+            if (result.correct) {
+                gameState.solved = true;
+                showToast('恭喜！你解开了谜题！', 'success');
+            } else {
+                showToast('猜测不正确，请继续尝试', 'warning');
+            }
+
+            elements.guessInput.value = '';
+        } catch (error) {
+            console.error('猜测失败:', error);
+            showToast(`错误: ${error.message}`, 'error');
+        } finally {
+            showLoading(false);
+            updateStatusDisplay();
+        }
+    }
+
+    // 显示/隐藏加载指示器
+    function showLoading(show) {
+        if (show) {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading';
+            loadingDiv.innerHTML = `
+                <div class="spinner"></div>
+                <p>处理中，请稍候...</p>
+            `;
+            document.body.appendChild(loadingDiv);
+        } else {
+            const loading = document.querySelector('.loading');
+            if (loading) loading.remove();
+        }
+    }
+
+    // 事件监听器
+    elements.newGameBtn.addEventListener('click', startNewGame);
+    elements.askBtn.addEventListener('click', askQuestion);
+    elements.hintBtn.addEventListener('click', getHint);
+    elements.guessBtn.addEventListener('click', makeGuess);
+
+    // 允许按Enter键提问
+    elements.questionInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') askQuestion();
+    });
+
+    // 初始化
+    updateStatusDisplay();
+</script>
+</body>
+</html>
